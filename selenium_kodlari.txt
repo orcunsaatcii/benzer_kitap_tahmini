@@ -1,0 +1,72 @@
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+import pandas as pd
+import numpy as np
+
+
+
+service = Service(executable_path="chromedriver.exe")
+
+driver = webdriver.Chrome(service=service)
+
+driver.maximize_window()
+
+
+
+page_num = 186
+book_names_file = "books.txt"
+book_plots_file = "plots.txt"
+
+
+
+while True:
+    try:
+
+        driver.get(f"https://1000kitap.com/kitaplar/en-begenilenler?sayfa={page_num}")
+        
+        WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR,"h3.text.font-bold.truncate.hover\:underline")))
+        isimler = driver.find_elements(By.CSS_SELECTOR, "h3.text.font-bold.truncate.hover\:underline")
+        
+    
+        
+        WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR, "h3.text.font-bold.truncate.hover\:underline")))
+        for i in range(len(isimler)):
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR, "h3.text.font-bold.truncate.hover\:underline")))
+            isimler = driver.find_elements(By.CSS_SELECTOR, "h3.text.font-bold.truncate.hover\:underline") 
+            current_isim = isimler[i].text
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR, "h3.text.font-bold.truncate.hover\:underline")))
+            isimler[i].click()
+            
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR, "span.text-alt")))
+            ozet = driver.find_element(By.CSS_SELECTOR, "span.text-alt")
+            
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR,"h3.text.font-bold.truncate.hover\:underline")))
+            with open(book_names_file, "a", encoding="utf-8") as file:
+                file.write(current_isim + "\n")
+
+            ozet_metni = " ".join(ozet.text.splitlines())
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR,"h3.text.font-bold.truncate.hover\:underline")))
+            with open(book_plots_file, "a", encoding="utf-8") as file:
+                file.write(ozet_metni + "\n")
+
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR, "span.text-alt")))
+            driver.back()
+            WebDriverWait(driver, 100000).until(expected_conditions.presence_of_all_elements_located((By.CSS_SELECTOR, "h3.text.font-bold.truncate.hover\:underline")))
+        
+        
+        page_num = page_num + 1
+
+    except NoSuchElementException:
+        break
+
+
+
+
+
+
+
+driver.quit()
